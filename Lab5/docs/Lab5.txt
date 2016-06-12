@@ -1,0 +1,12 @@
+The minimum amount of time that data_ready must remain asserted to ensure correct operation is 2 clock cycles. 
+
+Data must remain valid for 3 clock cycles, (2 for sync and one for storing);
+
+The image is much darker with all streaks of white changed to purple and only the edges showing. This makes sense since the coefficients make this a high pass filter.  
+
+general IO syntax:
+FUNCTION(INPUT_FILE, format specifier, OUTPUT)
+
+Format specifiers: %s = string, %c = character, %d = decimal, %i = intege (etc)
+
+ 

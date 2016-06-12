@@ -1,0 +1,84 @@
+LC0: 
+ Clear = 1;
+ modwait = 1;
+ reg[9] = Coefficient;
+ prevState = LC0;
+ goto CLEAR
+
+LC1:
+ modwait = 1;
+ reg[8] = Coefficient;
+ prevState = LC1
+ goto CLEAR
+
+LC2:
+ modwait = 1;
+ reg[7] = Coefficient;
+ prevState = LC2
+ goto CLEAR
+
+LC3:
+modwait = 1;
+reg[6] = Coefficient;
+goto IDLE
+
+CLEAR:
+ modwait = 0;
+ if (load_coefficient):
+   if prevState == LC0: goto LC1;
+   if prevState == LC1: goto LC2;
+   if prevState == LC2: goto LC3;
+ else: goto CLEAR
+ 
+IDLE:
+ modwait = 0; 
+ if (load_coefficient)  goto LC0 
+ else if (data_ready)   goto STORE
+ else                   goto IDLE   
+
+STORE: 
+ if (data_ready=0) goto EIDLE
+ reg[5] = data                             ; Store data in a register 5
+ err = 0                                   ; reset error
+
+ZERO: 
+reg[0] = 0                          ; zero out accumulator
+count_up = 1                        ; Flash count_up
+
+SORT1: reg[1] = reg[2]              ; Reorder registers
+SORT2: reg[2] = reg[3]              ; Reorder registers
+SORT3: reg[3] = reg[4]              ; Reorder registers
+SORT4: reg[4] = reg[5]              ; Reorder registers
+
+
+MUL1: 
+ reg[10] = reg[1] * reg[6]          ; sample4 * F3
+
+ADD1: 
+ reg[0] = reg[0] + reg[10]          ; add small pos. coefficient
+ if (V) goto EIDLE                  ; On overflow, err condition
+
+MUL2: 
+ reg[10] = reg[2] * reg[7]          ; sample3 * F2
+
+SUB1: reg[0] = reg[0] - reg[10]     ; sub Large neg. coefficient
+ if (V) goto EIDLE                  ; On overflow, err condition
+
+MUL3: 
+ reg[10] = reg[3] * reg[8]          ; sample2 * F1
+
+ADD2: 
+ reg[0] = reg[0] + reg[10]          ; add Large pos. coefficient
+ if (V) goto EIDLE                  ; On overflow, err condition
+
+MUL4: reg[10] = reg[4] * reg[9]     ; sample1 * F0
+
+SUB2: 
+ reg[0] = reg[0] - reg[10]           ; sub small neg. coefficient
+ if (V) goto EIDLE                   ; On overflow, err condition
+ else goto IDLE
+
+EIDLE: err = 1
+ modwait = 0;
+ if (data_ready=1) goto store              ; wait until data_ready=1
+ if (data_ready=0) goto eidle

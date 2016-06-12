@@ -1,0 +1,22 @@
+1. 
+Vikram: 
+ effort:     5
+ respect:    5
+ commitment: 5
+ learn:      5
+  
+Alex :  5
+ effort:     5
+ respect:    5
+ commitment: 5
+ learn:      4
+ 
+2.  Alex figured out that the shift_strobe is the enable to the Flex_9_Counter and figured out the RX_Data buffer was took care of the outputs.
+
+3. We met 5 days (5 times M-F) and texted everyday.
+
+4. I helped with the state diagram for the RCU(required states and outputs) and the required configuration of flex counters to count/strobe on timer.
+
+5.  Alex figured out that the shift_strobe is the enable to the Flex_9_Counter and figured out the RX_Data buffer was took care of the outputs. I learned from him also how to properly use the moore state diagram instead of the mealy diagram. (I got timer help from Tim(TA) also)
+
+6. The testbench by "Andrew" on Piazza helped since it showed the different types of testcases that would be valid. 

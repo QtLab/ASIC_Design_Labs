@@ -1,0 +1,15 @@
+I worked with Alex Lagerman on Lab5.
+
+1.
+Alex Lagerman: 5 5 5 5
+Vikram Manja:  5 5 5 5
+
+2. I helped in understanding the counter and the magnitude.
+  Both Alex and I worked together on the prelab.
+
+3. We met twice (Wednesday/Thursday).
+
+4. I contributed my thoughts on the prelab diagramming pseudocode. 
+   I also helped Alex debug.
+
+5. Alex helped with understanding the LC and DR signals and gave his input on the prelab.

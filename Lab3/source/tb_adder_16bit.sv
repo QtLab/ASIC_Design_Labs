@@ -1,0 +1,100 @@
+// $Id: $
+// File name:   tb_adder_4bit.sv
+// Created:     1/27/2016
+// Author:      Vikram Manja
+// Lab Section: 337-05
+// Version:     1.0  Initial Design Entry
+// Description: testbench for 4bit adder
+
+// 337 TA Provided Lab 2 Testbench
+// This code serves as a test bench for the 1 bit adder design 
+
+`timescale 1ns / 100ps
+
+module tb_adder_16bit
+();
+	// Define local parameters used by the test bench
+	localparam NUM_INPUT_BITS			= 16;
+	localparam NUM_OUTPUT_BITS		= NUM_INPUT_BITS + 1;
+	localparam MAX_OUTPUT_BIT			= NUM_OUTPUT_BITS - 1;
+	localparam NUM_TEST_BITS 			= (NUM_INPUT_BITS * 2) + 1;
+	localparam MAX_TEST_BIT				= NUM_TEST_BITS - 1;
+	localparam NUM_TEST_CASES 		= 9;
+	localparam MAX_TEST_VALUE 		= NUM_TEST_CASES - 1;
+
+	localparam TEST_CARRY_IN_BIT	= MAX_TEST_BIT;
+	localparam TEST_OVERFLOW_BIT	= MAX_OUTPUT_BIT;
+	localparam TEST_DELAY					= 10;
+	
+	// Declare Design Under Test (DUT) portmap signals
+	wire	[NUM_INPUT_BITS-1:0] tb_a;
+	wire	[NUM_INPUT_BITS-1:0] tb_b;
+	wire	tb_carry_in;
+	wire	[NUM_INPUT_BITS-1:0] tb_sum;
+	wire	tb_overflow;
+	
+	// Declare test bench signals
+	integer tb_test_case;
+	reg [MAX_TEST_BIT:0] tb_test_inputs;
+	reg [MAX_OUTPUT_BIT:0] tb_expected_outputs;
+        reg [2*MAX_OUTPUT_BIT+1:0] tb_test_vectors [0:9] = {33'h000000000, 33'h01111FFFF, 33'h0EEEE2222, 33'h0EEEEEEEE, 33'h000100001, 33'h011110000, 33'h0ABABABAB, 33'h077775555, 33'h011000000, 33'h087878787};
+	
+	// DUT port map
+	adder_16bit DUT(.a(tb_a), .b(tb_b), .carry_in(tb_carry_in), .sum(tb_sum), .overflow(tb_overflow));
+	
+	// Connect individual test input bits to a vector for easier testing
+	assign tb_a					= tb_test_inputs[NUM_INPUT_BITS-1:0];
+	assign tb_b					= tb_test_inputs[2*NUM_INPUT_BITS -1:NUM_INPUT_BITS];
+	assign tb_carry_in	= tb_test_inputs[TEST_CARRY_IN_BIT];
+	
+	// Test bench process
+	initial
+	begin
+		// Initialize test inputs for DUT
+		tb_test_inputs = 0;
+		
+		// Interative Exhaustive Testing Loop
+		for(tb_test_case = 0; tb_test_case < NUM_TEST_CASES; tb_test_case = tb_test_case + 1)
+		begin
+			// Send test input to the design
+			tb_test_inputs = tb_test_vectors[tb_test_case];
+			
+			// Wait for a bit to allow this process to catch up with assign statements triggered
+			// by test input assignment above
+			#1;
+			
+			// Calculate the expected outputs
+			tb_expected_outputs = tb_a + tb_b + tb_carry_in;
+			
+			// Wait for DUT to process the inputs
+			#(TEST_DELAY - 1);
+			
+			// Check the DUT's Sum output value
+			assert (tb_expected_outputs[NUM_INPUT_BITS-1:0] == tb_sum)
+				$info("Correct Sum value for test case %d!", tb_test_case);
+			else
+				$error("Incorrect Sum value for test case %d!", tb_test_case);
+			
+			// Check the DUT's Carry Out output value
+			assert(tb_expected_outputs[TEST_OVERFLOW_BIT] == tb_overflow)
+				$info("Correct Carry Out value for test case %d!", tb_test_case);
+			else
+				$error("Incorrect Carry Out value for test case %d!", tb_test_case);
+		end
+	end
+	
+	// Wrap-up process
+	final
+	begin
+		if(NUM_TEST_CASES != tb_test_case)
+		begin
+			// Didn't run the test bench through all test cases
+			$display("This test bench was not run long enough to execute all test cases. Please run this test bench for at least a total of %d ns", (NUM_TEST_CASES * TEST_DELAY));
+		end
+		else
+		begin
+			// Test bench was run to completion
+			$display("This test bench has run to completion");
+		end
+	end
+endmodule
